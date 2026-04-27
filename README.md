@@ -10,6 +10,26 @@ El sistema está diseñado para entornos con conectividad variable (como LATAM),
 - Escalabilidad
 - Resiliencia (offline-first donde sea posible)
 
+## ✅ Estado actual del backend
+
+El backend ya está funcional con NestJS + TypeORM + PostgreSQL.
+
+### Hecho
+- Autenticación JWT.
+- RBAC con roles `ADMIN`, `RESIDENT` y `GUARD`.
+- Creación de visitas con token seguro y expiración.
+- Validación de QR con marcado de uso y `AccessLog`.
+- Swagger documentado.
+- Helmet, CORS explícito, validation global y rate limiting.
+
+### Pendiente
+- Módulo formal de `Users`.
+- Módulo formal de `Houses`.
+- WebSockets para eventos en tiempo real.
+- Refresh tokens.
+- Historial/auditoría consultable por API.
+- Tests de auth y visitas.
+
 ---
 
 # 🎯 Objetivos del Sistema
@@ -34,7 +54,7 @@ El sistema está diseñado para entornos con conectividad variable (como LATAM),
 - Frontend: Vue 3 (SPA / PWA-ready)
 - Backend: NestJS (API REST + WebSockets)
 - Base de datos: PostgreSQL
-- ORM: Prisma
+- ORM: TypeORM
 - Autenticación: JWT
 - Tiempo real: WebSockets (NestJS Gateway)
 
@@ -45,12 +65,11 @@ residential-access/
 │
 ├── backend/
 │ ├── src/
-│ │ ├── modules/
-│ │ ├── common/
-│ │ ├── config/
+│ │ ├── auth/
 │ │ ├── database/
+│ │ ├── entities/
+│ │ ├── visits/
 │ │ └── main.ts
-│ └── prisma/
 │
 ├── frontend/
 │ ├── src/
@@ -125,7 +144,7 @@ residential-access/
 - Separación de capas:
   - Controller
   - Service
-  - Repository (Prisma)
+  - Repository (TypeORM)
 - Uso de DTOs y validaciones centralizadas
 
 ---
@@ -156,6 +175,13 @@ residential-access/
 - Generación de QR
 - Validación de tokens
 - Expiración
+
+## Visits Module
+- Crear visitas
+- Asociar visitas con residentes
+- Generar token QR único
+- Validar QR
+- Registrar auditoría de accesos
 
 ## Guards Module
 - Registro de accesos
@@ -193,6 +219,8 @@ residential-access/
 - timestamp
 - type (ENTRY/EXIT)
 
+> Nota: en el backend actual, `type` todavía no existe en la entidad; se guarda `timestamp` y la relación con `visit` y `guard`.
+
 ---
 
 # 🔄 Flujo del Sistema
@@ -219,6 +247,7 @@ residential-access/
 ## API REST
 - CRUD de entidades
 - Autenticación
+- Swagger en `/docs`
 
 ## WebSockets
 - Notificaciones en tiempo real
